@@ -36,14 +36,6 @@ Do not add overlapping read/decode/copy/compute counters to reconstruct wall tim
 
 The baseline uses physical reads to isolate an input-delivery scenario. A production RAM cache, different dtype/compression, alternative codec path, deeper prefetch or changed CPU affinity may improve speed, but changes must be reported as separate experiments.
 
-## Investigating the input bottleneck
-
-1. Reproduce the batch-1,024 full run with the original pipeline and capture all per-rank timings.
-2. Record the physical SSD topology, filesystem, virtual disk limits, CPU/GPU/SSD NUMA placement and host contention with the provider.
-3. Measure read-only bandwidth on the same files with comparable concurrency, then compare it with batch construction and full training. A new read-only test is a diagnostic, not one of the recorded training results.
-4. Change one of reader count, CPU placement, storage mapping or codec implementation at a time; retain the original baseline.
-5. Repeat on the intended physical-node configuration and check sustained performance with all eight GPUs active.
-
 ## References
 
 - [PyTorch MultiheadAttention](https://docs.pytorch.org/docs/stable/generated/torch.nn.MultiheadAttention.html)
