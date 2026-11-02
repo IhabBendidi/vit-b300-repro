@@ -1,0 +1,19 @@
+{
+  "baseline_date": "2026-10-27 to 2026-10-28",
+  "source_commit": "4a00e16a244a7d793946c33de66459b3ea1fbad7",
+  "source_module_sha256": {
+    "imaging.py": "3a662510f4c99043a38fa9feb854144665874c6f89b6d2f9716b95b286137723",
+    "imaging_zarr.py": "855440370a53ebd5dd3cdb67496d9a43fc79a05e702bc54e3ab553d38ba21600",
+    "zarr_training.py": "0e8857542cd31139373d53eaecef5d6f21dceb29114b162bcb49bce3a31d7f62",
+    "zarr_stream.py": "f1ac3d2f34484c0b96ea9144bf07f1d118fce031c3a875f058b8b8f5cc85b2c4"
+  },
+  "scope": "ViT-B/16 architecture, procedural images, GPU-cached training, local direct-I/O Zarr training",
+  "changes": [
+    "Renamed Python package and made paths portable.",
+    "Removed other workloads, remote storage clients, billing and provider comparisons.",
+    "Retained model, generator, optimizer, timed update loops, shard decoding, prefetching and loader tuning.",
+    "Added standalone command entry points, validation tests and instructions.",
+    "Added a Linux-only direct-I/O guard and creation of the results directory before export filesystem checks.",
+    "Treat unavailable local swap telemetry as null; normal training counters and update loops are unchanged."
+  ]
+}
