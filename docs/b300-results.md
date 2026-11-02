@@ -16,7 +16,7 @@ One batch is generated and copied to each GPU before timing, then reused for for
 
 ## Disk-fed training: accumulation = 1
 
-Images are read from the **24 TB local NVMe scratch volume** at `/scratch`, exposed to the guest as `/dev/sdb` (`scratch`). The separate 300 GB `/dev/sda` (`sbs`) boot volume did not serve the timed image reads. The underlying physical SSD model and disk layout were not recorded.
+Images are read from the **local NVMe scratch volume** at `/scratch`, exposed to the guest as `/dev/sdb` (`scratch`). The separate 300 GB `/dev/sda` (`sbs`) boot volume did not serve the timed image reads. The underlying physical SSD model and disk layout were not recorded.
 
 Each input batch is physically read, processed through Zarr, copied to the GPU, and trained. The uncompressed synthetic dataset contains 232,448 images (185,856 training, 46,592 validation), about 140 GB on disk. Full protocol: 120-second warmup plus three 180-second trials for each accumulation setting. Validation is outside the timed trials.
 
@@ -26,15 +26,6 @@ Each input batch is physically read, processed through Zarr, copied to the GPU, 
 | 2,048 | 16,384 | 5,302.0 | 662.8 | 3.192 |
 | 3,072 | 24,576 | 6,445.4 | 805.7 | 3.881 |
 
-## Disk-fed training: accumulation = 2
-
-Two microbatches per optimizer update; the dataset, GPU count and timed protocol are unchanged.
-
-| Batch/GPU | Global batch | Images/s, 8 GPUs | Images/s/GPU | Effective image read GB/s/node |
-| ---: | ---: | ---: | ---: | ---: |
-| 1,024 | 16,384 | 6,025.2 | 753.2 | 3.628 |
-| 2,048 | 32,768 | 5,513.3 | 689.2 | 3.320 |
-| 3,072 | 49,152 | 6,067.7 | 758.5 | 3.653 |
 
 ## What the measurements establish
 
@@ -42,7 +33,6 @@ Two microbatches per optimizer update; the dataset, GPU count and timed protocol
 - The batch-1,024 disk-fed trials span **5,386.3–6,310.8 images/s** and **3.243–3.800 GB/s**. Larger batches did not consistently improve throughput; batch 3,072 with accumulation 1 reached 6,445.4 images/s.
 - In the batch-1,024 third trial, one rank recorded **163.1 seconds of queue waiting in 181.0 seconds**, versus approximately 0.01 seconds on two other ranks. Batch preparation and Zarr processing were uneven. These overlapping timing counters are diagnostic clues, not an additive wall-time breakdown or proof of an SSD limit.
 - Effective read GB/s is image bytes consumed divided by full training-trial time, using decimal GB. It includes the effect of CPU processing, transfers, training and synchronization; it is not a raw disk bandwidth rating. Physical-read counters were checked against image bytes. No matched write-speed measurement is claimed.
-- A batch of 4,096 images/GPU failed the smoke test with CUDA out-of-memory. No throughput is reported for it. The data are procedural images used for a training simulation; these results do not establish biological-model accuracy or convergence.
 
 ## Recorded environment
 
